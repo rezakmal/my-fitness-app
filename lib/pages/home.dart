@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/category_model.dart';
 import '../models/diet_model.dart';
+import 'package:fitness/models/diet_model.dart';
 
 class HomePage extends StatelessWidget {
     HomePage({super.key});
@@ -13,10 +14,6 @@ class HomePage extends StatelessWidget {
       categories = CategoryModel.getCategories();
     }
 
-    void _getDiets() {
-      diets = DietModel.getDiets();
-    }
-
     void _getInitialInfo() {
       categories = CategoryModel.getCategories();
       diets = DietModel.getDiets();
@@ -24,16 +21,16 @@ class HomePage extends StatelessWidget {
 
     @override
     Widget build(BuildContext context) {
-      _getCategories();
+      _getInitialInfo();
         return Scaffold(
             appBar: appBar(),
             backgroundColor: Colors.white,
             body: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                    _searchField(),
-                    const SizedBox(height: 40,),
-                    _categoriesSection(categories: categories),
+                  _searchField(),
+                  const SizedBox(height: 40,),
+                  _categoriesSection(categories: categories),
                   SizedBox(height: 40,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,8 +58,48 @@ class HomePage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(20)
                                 ),
                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    SvgPicture.asset(diets[index].iconPath)
+                                    SvgPicture.asset(diets[index].iconPath),
+                                    Text(
+                                      diets[index].name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black,
+                                        fontSize: 16
+                                      ),
+                                    ),
+                                    Text(
+                                      diets[index].level + '|' + diets[index].duration + '|' + diets[index].calorie,
+                                      style: TextStyle(
+                                        color: Color(0xff7B6F72),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w400
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 45,
+                                      width: 130,
+                                      child: Center(
+                                        child: Text(
+                                          'View',
+                                          style: TextStyle(
+                                            color: diets[index].viewIsSelected ? Colors.white : Color(0xffC588BF2),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14
+                                          ),
+                                        ),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            diets[index].viewIsSelected ? Color(0xff9DCEFF) : Colors.transparent,
+                                            diets[index].viewIsSelected ? Color(0xff92A3FD) : Colors.transparent
+                                          ]
+                                        ),
+                                        borderRadius: BorderRadius.circular(50)
+                                      ),
+                                    )
                                   ],
                                 ),
                               );
