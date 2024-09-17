@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/category_model.dart';
+import '../models/diet_model.dart';
 
 class HomePage extends StatelessWidget {
     HomePage({super.key});
 
     List<CategoryModel> categories = [];
+    List<DietModel> diets = [];
 
     void _getCategories() {
       categories = CategoryModel.getCategories();
     }
 
+    void _getDiets() {
+      diets = DietModel.getDiets();
+    }
+
+    void _getInitialInfo() {
+      categories = CategoryModel.getCategories();
+      diets = DietModel.getDiets();
+    }
+
     @override
     Widget build(BuildContext context) {
+      _getCategories();
         return Scaffold(
             appBar: appBar(),
             backgroundColor: Colors.white,
@@ -20,33 +32,52 @@ class HomePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                     _searchField(),
-                    SizedBox(height: 40,),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20), // last modified
-                          child: Text(
-                            'Category',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600
-                            ),
+                    const SizedBox(height: 40,),
+                    _categoriesSection(categories: categories),
+                  SizedBox(height: 40,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: Text(
+                          'Recommendation\nfor Diet',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600
                           ),
                         ),
-                        SizedBox(height: 15,),
-                        Container(
-                          height: 150,
-                          color: Colors.green,
-                          child: ListView.builder(
+                      ),
+                      SizedBox(height: 15,),
+                      Container(
+                        height: 240,
+                        child: ListView.separated(
                             itemBuilder: (context, index) {
-                              return Container();
+                              return Container(
+                                width: 210,
+                                decoration: BoxDecoration(
+                                  color: diets[index].boxColor.withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(20)
+                                ),
+                                child: Column(
+                                  children: [
+                                    SvgPicture.asset(diets[index].iconPath)
+                                  ],
+                                ),
+                              );
                             },
+                            separatorBuilder: (context, index) => SizedBox(width: 25,),
+                            itemCount: diets.length,
+                            scrollDirection: Axis.horizontal,
+                          padding: EdgeInsets.only(
+                            left: 20,
+                            right: 20
                           ),
-                        )
-                      ],
-                    ),
+                        ),
+                      )
+                    ],
+                  )
                 ],
             ),
         );
@@ -54,11 +85,11 @@ class HomePage extends StatelessWidget {
 
     Container _searchField() {
       return Container(
-        margin: EdgeInsets.only(top: 40, left: 20, right: 20),              
+        margin: const EdgeInsets.only(top: 40, left: 20, right: 20),              
         decoration: BoxDecoration(            
           boxShadow: [            
             BoxShadow(
-              color: Color(0xff1D1617).withOpacity(0.11),
+              color: const Color(0xff1D1617).withOpacity(0.11),
               blurRadius: 40,
               spreadRadius: 0.0
             )
@@ -68,9 +99,9 @@ class HomePage extends StatelessWidget {
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
-            contentPadding: EdgeInsets.all(15),
+            contentPadding: const EdgeInsets.all(15),
             hintText: 'Search Pancake',
-            hintStyle: TextStyle(
+            hintStyle: const TextStyle(
               color: Color(0xffDDDADA),
               fontSize: 14
             ),
@@ -78,13 +109,13 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               child: SvgPicture.asset('assets/icons/Search.svg'),
             ),
-            suffixIcon: Container(
+            suffixIcon: SizedBox(
               width: 100,
               child: IntrinsicHeight(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    VerticalDivider(
+                    const VerticalDivider(
                       color: Colors.black,
                       indent: 10,
                       endIndent: 10,
@@ -109,7 +140,7 @@ class HomePage extends StatelessWidget {
 
     AppBar appBar() {
         return AppBar(
-          title: Text(
+          title: const Text(
             'Breakfast',
             style: TextStyle(
               color: Colors.black,
@@ -124,17 +155,17 @@ class HomePage extends StatelessWidget {
             onTap: () {
             },
             child: Container(
-              margin: EdgeInsets.all(10),
+              margin: const EdgeInsets.all(10),
               alignment: Alignment.center,
               width: 37,
+              decoration: BoxDecoration(
+                color: const Color(0xffF7F8F8),
+                borderRadius: BorderRadius.circular(10)
+              ),
               child: SvgPicture.asset(
                 'assets/icons/arrow.svg',
                 height: 20,
                 width: 20,
-              ),
-              decoration: BoxDecoration(
-                color: Color(0xffF7F8F8),
-                borderRadius: BorderRadius.circular(10)
               ),
             ),
           ),
@@ -143,21 +174,97 @@ class HomePage extends StatelessWidget {
               onTap: () {
               },
               child: Container(
-                margin: EdgeInsets.all(10),
+                margin: const EdgeInsets.all(10),
                 alignment: Alignment.center,
                 width: 37,
+                decoration: BoxDecoration(
+                  color: const Color(0xffF7F8F8),
+                  borderRadius: BorderRadius.circular(10)
+                ),
                 child: SvgPicture.asset(
                   'assets/icons/arrow.svg',
                   height: 5,
                   width: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: Color(0xffF7F8F8),
-                  borderRadius: BorderRadius.circular(10)
                 ),
               ),
             )
           ],
         );
     }
+}
+
+class _categoriesSection extends StatelessWidget {
+  const _categoriesSection({
+    super.key,
+    required this.categories,
+  });
+
+  final List<CategoryModel> categories;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 20), // last modified
+          child: Text(
+            'Category',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.w600
+            ),
+          ),
+        ),
+        const SizedBox(height: 15,),
+        SizedBox(
+          height: 120,
+          child: ListView.separated(
+            itemCount: categories.length,
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.only(
+              left: 20,
+              right: 20
+            ),
+            separatorBuilder: (context, index) => const SizedBox(width: 25,),
+            itemBuilder: (context, index) {
+              return Container(
+                width: 100,
+                decoration: BoxDecoration(
+                  color: categories[index].boxColor.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(16)
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SvgPicture.asset(categories[index].iconPath),
+                      ),
+                    ),
+                    Text(
+                      categories[index].name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black,
+                        fontSize: 14
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        )
+      ],
+    );
+  }
 }
